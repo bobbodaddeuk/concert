@@ -2,9 +2,9 @@ import _ from 'lodash';
 import { compare, hash } from 'bcrypt';
 import { Repository } from 'typeorm';
 import {
-  BadRequestException,
   ConflictException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Role } from './types/userRole.type';
@@ -64,11 +64,11 @@ export class UserService {
   }
 
   // 프로필 조회
-  async findOne(id: number): Promise<User | null> {
-    const userId = +id;
-    if (!userId) {
-      throw new BadRequestException('해당하는 유저가 존재하지 않습니다.');
+  async findUserById(id: number): Promise<User> {
+    const foundUser = await this.userRepository.findOne(id);
+    if (!foundUser) {
+      throw new NotFoundException('해당하는 유저가 존재하지 않습니다.');
     }
-    return await this.userRepository.findOne({ where: { id: userId } });
+    return foundUser;
   }
 }

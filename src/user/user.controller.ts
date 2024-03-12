@@ -8,7 +8,7 @@ import {
   Body,
   Param,
   UseGuards,
-  NotFoundException,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
@@ -38,11 +38,8 @@ export class UserController {
 
   // 프로필 조회
   @Get(':id')
-  async findOne(@Param('id') id: number) {
-    const user = await this.userService.findOne(+id);
-    if (!user) {
-      throw new NotFoundException('해당하는 사용자가 존재하지 않습니다.');
-    }
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
+    const user = await this.userService.findUserById(+id);
     return user;
   }
 
